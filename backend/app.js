@@ -1,51 +1,38 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+
+const postsRoutes = require("./routes/posts");
+
 const app = express();
 
+mongoose
+  .connect(
+    'mongodb+srv://ali:BmvgTTeGKCMO3Pgi@cluster0-fojmq.mongodb.net/node-angular?retryWrites=true&w=majority'
+  )
+  .then(() => {
+    console.log("Connected to database!");
+  })
+  .catch(() => {
+    console.log("Connection failed!");
+  });
+
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-Width, Content-Type, Accept'
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
   );
   res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PATCH, DELETE, OPTIONS'
+    "Access-Control-Allow-Methods",
+    "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
   next();
 });
 
-app.post('/api/posts', (req, res, next) => {
-  const post = req.body;
-  res.status(201).json({
-    message: 'Post added successfuly'
-  });
-});
-
-app.use('/api/posts', (req, res, next) => {
-  const posts = [
-    {
-      id: '12837t12837sd',
-      title: 'first server post',
-      content: 'first server content...'
-    },
-    {
-      id: '5rtfjt6yu7y6r',
-      title: 'second server post',
-      content: 'second server content...'
-    },
-    {
-      id: 'sdfv34tfgh56',
-      title: 'third server post',
-      content: 'third server content...'
-    }
-  ];
-  res.status(200).json({
-    message: 'posts fetched...',
-    posts: posts
-  });
-});
+app.use("/api/posts", postsRoutes);
 
 module.exports = app;
